@@ -36,7 +36,7 @@ msgstr ""
 	cmdParse := &cobra.Command{
 		Use:   "parse [template file to parse]",
 		Short: "Parse a template file for translatable strings",
-		Long:  "The given template file is checked for all instances of \"{{ ." + objName + ".Get \"<text>\" }}\".",
+		Long:  "The given template file is checked for all instances of \"{{ " + objName + ".Get \"<text>\" }}\".",
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			f, err := os.Open(args[0])
@@ -45,7 +45,7 @@ msgstr ""
 			}
 			defer f.Close()
 
-			re := regexp.MustCompile(`\{\{\s*.` + objName + `.Get "(.*)"\s*\}\}`)
+			re := regexp.MustCompile(`\{\{\s*` + regexp.QuoteMeta(objName) + `\.Get "(.*?)"\s*\}\}`)
 
 			fScanner := bufio.NewScanner(f)
 			fScanner.Split(bufio.ScanLines)
@@ -65,7 +65,7 @@ msgstr ""
 			}
 		},
 	}
-	cmdParse.Flags().StringVarP(&objName, "object", "o", objName, "The name of the Locale object used in the template (without dot prefix!)")
+	cmdParse.Flags().StringVarP(&objName, "object", "o", objName, "The name of the Locale object used in the template (e.g., 'Locale', '.Locale', '$.Locale')")
 	rootCmd.PersistentFlags().Bool("header", false, "Print POT header")
 	rootCmd.AddCommand(cmdParse)
 
